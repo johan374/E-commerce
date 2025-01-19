@@ -1,5 +1,6 @@
 // Import all images with correct paths (going up to src then down to assets)
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect} from 'react';
+import { Link } from 'react-router-dom';
 
 // Import Electronics images
 import laptop from '/src/assets/Electronics/laptop/laptop.png';
@@ -143,7 +144,9 @@ function Hero() {
 
         <div className="mt-12 text-center">
           <button className="bg-white text-gray-900 px-8 py-3 rounded-md font-medium hover:bg-gray-100 transition-all transform hover:scale-105">
-            Explore Products
+            <Link to="/shop" className="bg-white text-gray-900 px-8 py-3 rounded-md font-medium hover:bg-gray-100 transition-all transform hover:scale-105">
+                Explore Products
+            </Link>
           </button>
         </div>
       </div>

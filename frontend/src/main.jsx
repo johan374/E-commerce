@@ -8,3 +8,11 @@ createRoot(document.getElementById('root')).render(
     <App />
   </StrictMode>,
 )
+window.onerror = function(msg, url, lineNo, columnNo, error) {
+  console.error('Global error: ', {msg, url, lineNo, columnNo, error});
+  return false;
+};
+
+window.addEventListener('unhandledrejection', function(event) {
+  console.error('Unhandled promise rejection:', event.reason);
+});

@@ -1,24 +1,49 @@
 from rest_framework import serializers
 from .models import Product, ProductImage
+# In products/serializers.py
+from apps.commerce.product_features.subcategories.serializers import SubcategorySerializer
 
-# Serializer for handling product images
+# This class handles the serialization of ProductImage model instances into JSON format
+# It inherits from ModelSerializer which provides default serialization behavior
 class ProductImageSerializer(serializers.ModelSerializer):
-    # Custom field that generates a full URL for the image
-    # SerializerMethodField allows us to define custom logic for the field
+    # Define a custom field that will be populated by the get_image_url method
+    # SerializerMethodField() is used when we need custom logic to generate the field value
     image_url = serializers.SerializerMethodField()
 
+    # Meta class defines metadata for the serializer
     class Meta:
-        model = ProductImage  # Specifies which model to serialize
-        fields = ['id', 'image_url', 'is_primary', 'alt_text']  # Fields to include in serialization
+        # Specify which model this serializer is working with
+        model = ProductImage
+        # List the fields that should be included in the serialized output
+        # 'id': The primary key of the image
+        # 'image_url': The computed URL for the image
+        # 'is_primary': Boolean indicating if this is the main product image
+        # 'alt_text': Alternative text for the image (for accessibility)
+        fields = ['id', 'image_url', 'is_primary', 'alt_text']
 
-    # Custom method to generate the full image URL
-    def get_image_url(self, obj):  # obj is the ProductImage instance
+    # Custom method to generate the full URL for the image
+    # The method name must be 'get_<field_name>' for SerializerMethodField
+    # obj parameter is the ProductImage instance being serialized
+    def get_image_url(self, obj):
         try:
-            # Get the request object from serializer context
+            # Get the request object from the serializer's context
+            # Context is passed when the serializer is instantiated
             request = self.context.get('request')
-            # Build absolute URI if request exists and image is present
-            return request.build_absolute_uri(obj.image.url) if request and obj.image else None
+            
+            # After: Building absolute URLs
+            # Check if both request and image exist
+            if request and obj.image:
+                # build_absolute_uri() creates a full URL including domain
+                # Example: http://yourdomain.com/media/products/image.jpg
+                url = request.build_absolute_uri(obj.image.url) # This gives full URL with domain
+                print(f"Generated image URL: {url}")  # Debug logging
+                return url
+            
+            # Return None if either request or image is missing
+            return None
+            
         except Exception as e:
+            # Error handling with logging
             print(f"Error getting image URL for product image {obj.id}: {e}")
             return None
 
@@ -28,6 +53,7 @@ class ProductSerializer(serializers.ModelSerializer):
     image_url = serializers.SerializerMethodField()  # For main product image
     additional_images = serializers.SerializerMethodField()  # For additional product images
     is_in_stock = serializers.SerializerMethodField()  # For stock status
+    subcategory_details = SubcategorySerializer(source='subcategory', read_only=True)
 
     class Meta:
         model = Product  # Specifies the Product model for serialization
@@ -35,6 +61,8 @@ class ProductSerializer(serializers.ModelSerializer):
             # All fields that should be included in the API response
             'id', 'name',              # Basic product identification
             'category',                # Product categorization
+            'subcategory',
+            'subcategory_details',
             'price',                   # Product pricing
             'description',             # Full product description
             'short_description',       # Brief product description

@@ -23,12 +23,26 @@ class Product(models.Model):
             MaxLengthValidator(100, "Product name is too long")
         ]
     )
+    is_active = models.BooleanField(
+        default=True,
+        help_text="Whether this product is active and should be displayed"
+    )
 
     # Category field using predefined choices
     category = models.CharField(
         max_length=4,  # Length matches longest choice code ('ELEC')
         choices=CategoryChoices.choices,
         default=CategoryChoices.ELECTRONICS  
+    )
+
+    # ForeignKey Concept:
+    # A ForeignKey is a database relationship that creates a link between two models.
+    subcategory = models.ForeignKey(
+        'subcategories.Subcategory',  # Reference to the Subcategory model
+        on_delete=models.SET_NULL,    # What happens when the related subcategory is deleted
+        null=True,                    # Allows the field to be null in the database
+        blank=True,                   # Allows the field to be optional in forms
+        related_name='products'       # Allows reverse relationship lookup
     )
 
     # Price field with decimal precision and validation

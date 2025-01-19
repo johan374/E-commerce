@@ -103,7 +103,7 @@ class ProductAdmin(admin.ModelAdmin):
     # Group fields into sections in the edit form
     fieldsets = (
         ('Basic Information', {
-            'fields': ('name', 'category', 'price')
+            'fields': ('name', 'category', 'subcategory', 'price')
         }),
         ('Descriptive Content', {
             'fields': ('description', 'short_description', 'meta_description')
