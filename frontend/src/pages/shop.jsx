@@ -41,7 +41,8 @@ const Shop = () => {
         const fetchProducts = async () => {
             try {
                 setIsLoading(true);
-                const response = await productAPI.getAllProducts();
+                // Pass currentPage to getAllProducts
+                const response = await productAPI.getAllProducts(currentPage);
                 
                 if (response?.data?.results) {
                     setProducts(response.data.results);
@@ -54,9 +55,9 @@ const Shop = () => {
                 setIsLoading(false);
             }
         };
-
+    
         fetchProducts();
-    }, [currentPage]);
+    }, [currentPage]); // Now currentPage is properly used
 
     if (isLoading) {
         return (

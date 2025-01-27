@@ -41,22 +41,19 @@ const ProductDetailModal = ({
     const handleBuyNow = async () => {
         try {
             setIsProcessing(true);
-            // Prepare item data for API
             const items = [{
                 product_id: product.id,
                 quantity: 1,
-                price_cents: Math.round(product.price * 100) // Convert price to cents
+                price_cents: Math.round(product.price * 100)
             }];
-
-            // Create order through payment API
+            console.log('Sending items:', items); // Log the payload
             const response = await paymentAPI.createOrder(items);
-
-            // If successful, show payment form
             if (response.data?.client_secret) {
                 setClientSecret(response.data.client_secret);
                 setShowPayment(true);
             }
         } catch (error) {
+            console.error('Error payload:', error.response?.data);
             console.error('Error initiating purchase:', error);
         } finally {
             setIsProcessing(false);

@@ -1,71 +1,35 @@
-import api from './index';
+// food.js
+import frontendInventory from '../pages/categories/frontendInventory';
 
-export const foodAPI = {
-    getAllFood: async (page = 1) => {
-        try {
-            const response = await api.get('/products/category/FOOD/', { 
-                params: { page } 
-            });
-            return response;
-        } catch (error) {
-            console.error('Error fetching food data:', error);
-            throw error;
-        }
-    },
-    
-    searchFood: async (query, page = 1) => {
-        try {
-            const response = await api.get('/products/search/', {
-                params: {
-                    q: query,
-                    category: 'FOOD',
-                    page: page
-                }
-            });
-            return response;
-        } catch (error) {
-            console.error('Error searching food:', error);
-            throw error;
-        }
-    },
-    
-    getFoodByCategory: async (subcategory, page = 1) => {
-        try {
-            console.log('Fetching food subcategory:', subcategory);
-            
-            // If category is 'all', use the regular food endpoint
-            if (subcategory === 'all') {
-                return await foodAPI.getAllFood(page);
-            }
-
-            // Map the frontend subcategory IDs to the backend slugs
-            const slugMap = {
-                'groceries': 'groceries',
-                'prepared-meals': 'prepared-meals',
-                'snacks-beverages': 'snacks-beverages'
-            };
-
-            const slug = slugMap[subcategory];
-            console.log('Using slug:', slug); // Debug log
-
-            if (!slug) {
-                throw new Error('Invalid subcategory');
-            }
-
-            const response = await api.get('/products/category/FOOD/', {
-                params: {
-                    page: page,
-                    slug: slug
-                }
-            });
-
-            console.log('Food subcategory response:', response.data);
-            return response;
-        } catch (error) {
-            console.error(`Error fetching food for subcategory ${subcategory}:`, error);
-            throw error;
-        }
+class FoodService {
+    #paginate(items, page = 1, pageSize = 12) {
+        const startIndex = (page - 1) * pageSize;
+        return {
+            results: items.slice(startIndex, startIndex + pageSize),
+            count: items.length
+        };
     }
-};
 
-export default foodAPI;
+    getAllFood(page = 1) {
+        return { data: this.#paginate(frontendInventory.food, page) };
+    }
+
+    searchFood(query, page = 1) {
+        const filtered = frontendInventory.food.filter(product => 
+            product.name.toLowerCase().includes(query.toLowerCase()) ||
+            product.description.toLowerCase().includes(query.toLowerCase())
+        );
+        return { data: this.#paginate(filtered, page) };
+    }
+
+    getFoodByCategory(subcategory, page = 1) {
+        if (subcategory === 'all') return this.getAllFood(page);
+
+        const filtered = frontendInventory.food.filter(
+            product => product.subcategory.slug === subcategory
+        );
+        return { data: this.#paginate(filtered, page) };
+    }
+}
+
+export const foodAPI = new FoodService();

@@ -62,12 +62,32 @@ class CreateOrderView(APIView):
             
             # Create individual order items
             # Each item in the order is saved separately
+            # In CreateOrderView post method, right before OrderItem.objects.create
+            from apps.commerce.product_features.products.models import Product
+
+            # Loop through each item in the order
             for item in items:
+                try:
+                    # Try to find existing product in database by ID
+                    product = Product.objects.get(id=item['product_id'])
+                except Product.DoesNotExist:
+                    # If product doesn't exist, create it with data from cart item
+                    product = Product.objects.create(
+                        id=item['product_id'],
+                        name=item.get('name', ''),  # Get name or empty string if missing
+                        price=float(item.get('price_cents', 0)) / 100,  # Convert cents to dollars
+                        description=item.get('description', ''),
+                        category=item.get('category', ''), 
+                        is_featured=item.get('is_featured', False),
+                        rating=item.get('rating', 0)
+                    )
+
+                # Create order item record linking the order to the product
                 OrderItem.objects.create(
-                    order=order,                # Link to parent order
-                    product_id=item['product_id'],  # Which product
-                    quantity=item['quantity'],      # How many
-                    price_cents=item['price_cents'] # Price per item
+                    order=order,               # Link to parent order
+                    product_id=item['product_id'],  # Product being ordered
+                    quantity=item['quantity'],      # How many ordered
+                    price_cents=item['price_cents'] # Price in cents
                 )
             
             # Prepare the response

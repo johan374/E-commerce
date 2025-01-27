@@ -3,10 +3,10 @@ import React, { useState, useEffect} from 'react';
 import { Link } from 'react-router-dom';
 
 // Import Electronics images
-import laptop from '/src/assets/Electronics/laptop/laptop.png';
-import smartphone from '/src/assets/Electronics/phone/smartphone.png';
+import laptop from '/src/assets/Electronics/computers-smartphones/laptop/laptop.png';
+import smartphone from '/src/assets/Electronics/computers-smartphones/phone/smartphone.png';
 import tool from '/src/assets/Electronics/tool.png';
-import tv from '/src/assets/Electronics/tv/tv.png';
+import tv from '/src/assets/Electronics/tv-home-theater/tv/tv.png';
 
 // Import Food images
 import groceries from '/src/assets/Food/groceries.png';

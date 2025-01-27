@@ -139,7 +139,7 @@ export const CartProvider = ({ children }) => {
         return cartState.items.map(item => ({
             product_id: item.id,
             quantity: item.quantity,
-            price_cents: Math.round(item.price * 100)
+            price_cents: Math.round(parseFloat(item.price) * 100)
         }));
     };
 

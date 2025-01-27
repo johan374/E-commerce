@@ -13,17 +13,12 @@ const paymentApi = axios.create({
 // In payment.js
 export const paymentAPI = {
     createOrder: async (items) => {
+        console.log('Payment payload:', { items });
         try {
-            const response = await paymentApi.post('/api/orders/create/', {
-                items: items
-            });
+            const response = await paymentApi.post('/api/orders/create/', { items });
             return response;
         } catch (error) {
-            console.error('Detailed error:', {
-                status: error.response?.status,
-                data: error.response?.data,
-                message: error.message
-            });
+            console.error('Error details:', error.response?.data);
             throw error;
         }
     },
